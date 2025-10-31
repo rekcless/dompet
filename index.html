@@ -10,11 +10,13 @@
 
     <h1>Catatan Pengeluaran Harian & Bulanan</h1>
 
+    <!-- UI Status Autentikasi -->
     <div id="auth-status">
         <span id="user-info">Anda belum login.</span>
         <button id="logout-btn" style="display: none;">Logout</button>
     </div>
 
+    <!-- UI Login/Daftar -->
     <div id="login-container">
         <h2>Login / Daftar</h2>
         <input type="email" id="email" placeholder="Email">
@@ -25,6 +27,7 @@
 
     <hr>
 
+    <!-- UI Aplikasi Utama (Hanya terlihat setelah login) -->
     <div id="main-app" style="display: none;">
         
         <h2>Tambah Pengeluaran Baru</h2>
@@ -39,28 +42,32 @@
 
         <h2>Rekap Total Pengeluaran</h2>
         <div id="recap-container">
-            </div>
+            <!-- Total harian dan bulanan akan muncul di sini -->
+        </div>
 
         <hr>
 
         <h2>Daftar Riwayat Pengeluaran</h2>
         <ul id="expense-list">
-            </ul>
+            <!-- Riwayat pengeluaran akan muncul di sini -->
+        </ul>
     </div>
 
+    <!-- Firebase SDKs (Compatibility Version) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // *** PENTING: GANTI DENGAN KONFIGURASI PROYEK FIREBASE ANDA ***
+        // *** KONFIGURASI FIREBASE ANDA TELAH DIMASUKKAN DI SINI ***
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyASlBHqMbc3qegoqYx4pJieQrDgKNh-GA0",
+            authDomain: "wallet-26246.firebaseapp.com",
+            projectId: "wallet-26246",
+            storageBucket: "wallet-26246.firebasestorage.app",
+            messagingSenderId: "885423594769",
+            appId: "1:885423594769:web:da035f279e0f1485a5c0b0",
+            measurementId: "G-Q5ZH25EZT4"
         };
 
         // Inisialisasi Firebase
@@ -73,8 +80,9 @@
 
     <script src="script.js"></script>
     
+    <!-- Bagian Kredit/Copyright -->
     <footer>
-        <p>Aplikasi ini dibuat berkat ide dan kontribusi dari **Wakhid**.</p>
+        <p>&copy; 2024 Wakhid Expense Tracker. All rights reserved.</p>
     </footer>
 </body>
 </html>
