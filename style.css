@@ -121,3 +121,18 @@ button:hover {
         margin: 20px auto;
     }
 }
+
+
+/* style.css (Tambahkan di bagian paling bawah) */
+
+/* --- Kredit Footer --- */
+footer {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 10px;
+    border-top: 1px solid var(--color-light-green);
+    color: var(--color-dark-green);
+    font-size: 0.8em;
+    background-color: transparent; /* Hilangkan background putih dari div/form default */
+    box-shadow: none;
+}
