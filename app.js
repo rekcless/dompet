@@ -30,26 +30,35 @@ form.addEventListener('submit', async (e) => {
 
     if(!tanggal || !kategori || !nominal) return;
 
-    await addDoc(collection(db, "pengeluaran"), {
-        tanggal: new Date(tanggal),
-        kategori,
-        nominal,
-        keterangan
-    });
-
-    form.reset();
-    loadData(); // reload tabel
+    try {
+        await addDoc(collection(db, "pengeluaran"), {
+            tanggal: new Date(tanggal),
+            kategori,
+            nominal,
+            keterangan
+        });
+        form.reset();
+        alert("Data berhasil ditambahkan!");
+        loadData();
+    } catch (error) {
+        console.error("Gagal menambahkan data: ", error);
+        alert("Gagal menambahkan data. Cek console.");
+    }
 });
 
 // Load semua data dari Firestore
 async function loadData(){
-    const snapshot = await getDocs(collection(db, "pengeluaran"));
-    allData = [];
-    snapshot.forEach(doc => allData.push({...doc.data(), id: doc.id}));
+    try {
+        const snapshot = await getDocs(collection(db, "pengeluaran"));
+        allData = [];
+        snapshot.forEach(doc => allData.push({...doc.data(), id: doc.id}));
 
-    updateKategoriFilter();
-    updateHarian();
-    updateBulanan();
+        updateKategoriFilter();
+        updateHarian();
+        updateBulanan();
+    } catch (error) {
+        console.error("Gagal load data: ", error);
+    }
 }
 
 // Update dropdown kategori
@@ -101,4 +110,21 @@ function updateBulanan(){
             total += d.nominal;
             tabelBulanan.innerHTML += `
                 <tr>
-                    <td>${tgl.toDateString()}</
+                    <td>${tgl.toDateString()}</td>
+                    <td>${d.kategori}</td>
+                    <td>${d.nominal}</td>
+                    <td>${d.keterangan || '-'}</td>
+                </tr>
+            `;
+        }
+    });
+
+    totalBulanan.textContent = `Total Bulanan: Rp${total}`;
+}
+
+// Event listener filter kategori & tombol lihat bulanan
+filterKategori.addEventListener('change', () => { updateHarian(); updateBulanan(); });
+lihatBulananBtn.addEventListener('click', updateBulanan);
+
+// Load data saat pertama kali buka web
+loadData();
