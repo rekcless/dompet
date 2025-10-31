@@ -1,8 +1,8 @@
-// Import Firebase SDK yang dibutuhkan
+// Import Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
 
-// Firebase config kamu
+// Config Firebase kamu
 const firebaseConfig = {
   apiKey: "AIzaSyD8LA61JMhfJTr-xING6rPOTY6hUn2HCok",
   authDomain: "dompet-68e74.firebaseapp.com",
