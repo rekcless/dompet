@@ -1,16 +1,16 @@
-// Import Firebase SDK
+// Import Firebase SDK yang dibutuhkan
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
 
-// Config Firebase kamu
+// Config Firebase final
 const firebaseConfig = {
-  apiKey: "AIzaSyD8LA61JMhfJTr-xING6rPOTY6hUn2HCok",
-  authDomain: "dompet-68e74.firebaseapp.com",
-  projectId: "dompet-68e74",
-  storageBucket: "dompet-68e74.firebasestorage.app",
-  messagingSenderId: "431068025175",
-  appId: "1:431068025175:web:ee84dcee7445c63970ee12",
-  measurementId: "G-VYXX7F59RX"
+  apiKey: "AIzaSyASlBHqMbc3qegoqYx4pJieQrDgKNh-GA0",
+  authDomain: "wallet-26246.firebaseapp.com",
+  projectId: "wallet-26246",
+  storageBucket: "wallet-26246.firebasestorage.app",
+  messagingSenderId: "885423594769",
+  appId: "1:885423594769:web:da035f279e0f1485a5c0b0",
+  measurementId: "G-Q5ZH25EZT4"
 };
 
 // Inisialisasi Firebase
