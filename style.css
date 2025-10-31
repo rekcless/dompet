@@ -1,0 +1,123 @@
+/* Palet Warna */
+:root {
+    --color-cream: #f4f1de;      /* Krem lembut untuk background utama */
+    --color-dark-green: #3d405b; /* Hijau gelap/kebiruan untuk teks & header */
+    --color-light-green: #81b29a; /* Hijau sedang/sage untuk tombol & aksen */
+    --color-accent: #e07a5f;     /* Warna aksen oranye/merah bata untuk tombol Hapus/penting */
+    --color-white: #ffffff;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--color-cream); /* Background Krem */
+    color: var(--color-dark-green);
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+/* --- Container Utama --- */
+h1 {
+    text-align: center;
+    color: var(--color-dark-green);
+    margin-bottom: 30px;
+    border-bottom: 2px solid var(--color-light-green);
+    padding-bottom: 10px;
+}
+
+div, form {
+    background-color: var(--color-white);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Input dan Tombol --- */
+input[type="email"],
+input[type="password"],
+input[type="date"],
+input[type="number"],
+input[type="text"],
+button {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    border: 1px solid var(--color-light-green);
+    width: 100%; /* Agar input lebih lebar */
+    box-sizing: border-box;
+}
+
+button {
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--color-white);
+    background-color: var(--color-light-green); /* Tombol utama hijau */
+    transition: background-color 0.3s ease;
+    border: none;
+}
+
+button:hover {
+    background-color: var(--color-dark-green);
+}
+
+/* Penyesuaian Tombol Auth */
+#login-container button,
+#logout-btn {
+    width: auto;
+    margin-right: 10px;
+}
+
+#logout-btn {
+    background-color: var(--color-dark-green);
+}
+
+/* --- Daftar Pengeluaran --- */
+#expense-list {
+    list-style: none;
+    padding: 0;
+}
+
+#expense-list li {
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--color-light-green);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#expense-list li:last-child {
+    border-bottom: none;
+}
+
+#expense-list li button {
+    width: auto;
+    padding: 5px 10px;
+    margin-left: 10px;
+    font-size: 0.8em;
+    background-color: var(--color-accent); /* Tombol Hapus: warna aksen */
+}
+
+/* --- Rekap Total --- */
+#recap-container {
+    background-color: var(--color-cream);
+    border: 2px solid var(--color-light-green);
+    color: var(--color-dark-green);
+}
+
+#recap-container h3 {
+    color: var(--color-accent);
+}
+
+#recap-container p {
+    font-size: 1.1em;
+    margin: 5px 0;
+}
+
+/* --- Tampilan Mobile (Optional) --- */
+@media (min-width: 600px) {
+    body {
+        max-width: 800px;
+        margin: 20px auto;
+    }
+}
