@@ -1,68 +1,109 @@
 const saldoEl = document.getElementById("saldo");
 const historyEl = document.getElementById("history");
 const saveBtn = document.getElementById("saveBtn");
-
-let chart;
+const monthFilter = document.getElementById("monthFilter");
 const ctx = document.getElementById("chart");
 
-function rupiah(num) {
-  return "Rp " + num.toLocaleString("id-ID");
+let chart;
+let currentMonth = "";
+
+// ===== UTIL =====
+function rupiah(n) {
+  return "Rp " + n.toLocaleString("id-ID");
 }
 
-// SAVE TRANSAKSI
-saveBtn.addEventListener("click", () => {
-  const type = typeEl = document.getElementById("type").value;
+// ===== AUTO BULAN SEKARANG =====
+const now = new Date();
+currentMonth = now.toISOString().slice(0,7);
+monthFilter.value = currentMonth;
+
+// ===== SIMPAN =====
+saveBtn.onclick = () => {
+  const type = document.getElementById("type").value;
   const amount = Number(document.getElementById("amount").value);
   const note = document.getElementById("note").value;
 
   if (!amount) return alert("Nominal kosong");
 
+  const date = new Date();
+
   db.collection("transactions").add({
     type,
     amount,
     note,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    createdAt: firebase.firestore.Timestamp.fromDate(date),
+    month: date.toISOString().slice(0,7)
   });
 
   document.getElementById("amount").value = "";
   document.getElementById("note").value = "";
-});
+};
 
-// LOAD DATA REALTIME
-db.collection("transactions")
-  .orderBy("createdAt", "desc")
-  .onSnapshot(snapshot => {
+// ===== FILTER =====
+monthFilter.onchange = () => {
+  currentMonth = monthFilter.value;
+  loadTransactions();
+};
+
+// ===== LOAD DATA =====
+function loadTransactions() {
+  let ref = db.collection("transactions")
+    .orderBy("createdAt", "desc");
+
+  if (currentMonth) {
+    ref = ref.where("month", "==", currentMonth);
+  }
+
+  ref.onSnapshot(snapshot => {
     historyEl.innerHTML = "";
-
-    let income = 0;
-    let expense = 0;
+    let income = 0, expense = 0;
 
     snapshot.forEach(doc => {
       const d = doc.data();
       const li = document.createElement("li");
-      li.className = d.type;
-      li.textContent =
-        `${d.type === "income" ? "+" : "-"} ${rupiah(d.amount)} ${d.note || ""}`;
-      historyEl.appendChild(li);
 
-      d.type === "income" ? income += d.amount : expense += d.amount;
+      const date = d.createdAt.toDate().toLocaleDateString("id-ID");
+      const isIncome = d.type === "income";
+      const amountClass = isIncome ? "positive" : "negative";
+
+      isIncome ? income += d.amount : expense += d.amount;
+
+      li.innerHTML = `
+        <div>
+          <div class="date">${date}</div>
+          <div>${d.note || "-"}</div>
+        </div>
+        <div class="amount ${amountClass}">
+          ${isIncome ? "+" : "-"}${rupiah(d.amount)}
+          <button class="delete">✕</button>
+        </div>
+      `;
+
+      li.querySelector(".delete").onclick = () => {
+        db.collection("transactions").doc(doc.id).delete();
+      };
+
+      historyEl.appendChild(li);
     });
 
-    saldoEl.textContent = rupiah(income - expense);
+    const saldo = income - expense;
+    saldoEl.textContent = rupiah(saldo);
+    saldoEl.className = saldo < 0 ? "negative" : "positive";
+
     renderChart(income, expense);
   });
+}
 
-// CHART
+loadTransactions();
+
+// ===== CHART =====
 function renderChart(income, expense) {
   if (chart) chart.destroy();
-
   chart = new Chart(ctx, {
     type: "doughnut",
     data: {
       labels: ["Pemasukan", "Pengeluaran"],
-      datasets: [{
-        data: [income, expense]
-      }]
+      datasets: [{ data: [income, expense] }]
     }
   });
 }
@@ -70,38 +111,37 @@ function renderChart(income, expense) {
 // ===== MARKET =====
 async function loadMarket() {
   try {
-    // BITCOIN
+    // USD → IDR
+    const usdRes = await fetch("https://open.er-api.com/v6/latest/USD");
+    const usd = await usdRes.json();
+    const usdRate = usd.rates.IDR;
+
+    document.getElementById("usd").innerHTML =
+      `USD → IDR: <span class="positive">${rupiah(usdRate)}</span>`;
+
+    // Emas Dunia (XAU)
+    const xauRes = await fetch("https://open.er-api.com/v6/latest/XAU");
+    const xau = await xauRes.json();
+    const goldIDR = xau.rates.USD * usdRate;
+
+    document.getElementById("gold").innerHTML =
+      `Emas Dunia (1 oz): <span class="positive">${rupiah(goldIDR)}</span>`;
+
+    // Bitcoin
     const btcRes = await fetch(
       "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=idr&include_24hr_change=true"
     );
     const btc = await btcRes.json();
-    const btcPrice = btc.bitcoin.idr;
-    const btcChange = btc.bitcoin.idr_24h_change;
+    const chg = btc.bitcoin.idr_24h_change;
 
     document.getElementById("btc").innerHTML =
-      `Bitcoin: ${rupiah(btcPrice)} 
-      <span class="${btcChange >= 0 ? "up" : "down"}">
-        (${btcChange.toFixed(2)}%)
+      `Bitcoin: ${rupiah(btc.bitcoin.idr)}
+      <span class="${chg >= 0 ? "positive" : "negative"}">
+        (${chg.toFixed(2)}%)
       </span>`;
 
-    // USD IDR
-    const usdRes = await fetch(
-      "https://api.exchangerate.host/latest?base=USD&symbols=IDR"
-    );
-    const usd = await usdRes.json();
-    document.getElementById("usd").innerHTML =
-      `USD → IDR: ${rupiah(usd.rates.IDR)}`;
-
-    // GOLD
-    const goldRes = await fetch(
-      "https://api.exchangerate.host/latest?base=XAU&symbols=IDR"
-    );
-    const gold = await goldRes.json();
-    document.getElementById("gold").innerHTML =
-      `Emas Dunia (1 oz): ${rupiah(gold.rates.IDR)}`;
-
   } catch (e) {
-    console.error("Market error:", e);
+    console.error("Market error", e);
   }
 }
 
