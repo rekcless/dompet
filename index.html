@@ -19,9 +19,7 @@
 
 <header>
   <h1>💰 Wallet Tracker</h1>
-  <div class="saldo">
-    Saldo: <span id="saldo">Rp 0</span>
-  </div>
+  <div id="saldo" class="positive">Rp 0</div>
 </header>
 
 <main>
@@ -34,14 +32,20 @@
       <option value="expense">Pengeluaran</option>
     </select>
     <input type="number" id="amount" placeholder="Nominal">
-    <input type="text" id="note" placeholder="Catatan">
+    <input type="text" id="note" placeholder="Keterangan">
     <button id="saveBtn">Simpan</button>
   </section>
 
   <!-- GRAFIK -->
   <section class="card">
-    <h2>Grafik Keuangan</h2>
+    <h2>Grafik Bulanan</h2>
     <canvas id="chart"></canvas>
+  </section>
+
+  <!-- FILTER BULAN -->
+  <section class="card">
+    <h2>📆 Pilih Bulan</h2>
+    <input type="month" id="monthFilter">
   </section>
 
   <!-- MARKET -->
