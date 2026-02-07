@@ -1,144 +1,149 @@
-// ===== FIREBASE =====
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import {
-  getFirestore, collection, addDoc,
-  getDocs, deleteDoc, doc
-} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAmfGFR-wl3Uf2Zja7Q_ee-NSFXtO66AQI",
-  authDomain: "wallet-7f76f.firebaseapp.com",
-  projectId: "wallet-7f76f",
-  storageBucket: "wallet-7f76f.firebasestorage.app",
-  messagingSenderId: "409930272697",
-  appId: "1:409930272697:web:b4d4b4675b0fb197953068"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// ===== ELEMENT =====
-const form = document.getElementById("form");
-const list = document.getElementById("list");
 const saldoEl = document.getElementById("saldo");
+const historyEl = document.getElementById("history");
+const saveBtn = document.getElementById("saveBtn");
 const monthFilter = document.getElementById("monthFilter");
+const ctx = document.getElementById("chart");
+
+let chart;
+let currentMonth = "";
 
 // ===== UTIL =====
-function rupiah(num) {
-  return "Rp " + Number(num).toLocaleString("id-ID");
+function rupiah(n) {
+  return "Rp " + n.toLocaleString("id-ID");
 }
 
 // ===== AUTO BULAN SEKARANG =====
-const today = new Date();
-const currentMonthValue = today.toISOString().slice(0, 7);
-monthFilter.value = currentMonthValue;
+const now = new Date();
+currentMonth = now.toISOString().slice(0,7);
+monthFilter.value = currentMonth;
 
-// ===== LOAD TRANSAKSI =====
-async function loadTransactions() {
-  list.innerHTML = "";
-  let saldo = 0;
+// ===== SIMPAN =====
+saveBtn.onclick = () => {
+  const type = document.getElementById("type").value;
+  const amount = Number(document.getElementById("amount").value);
+  const note = document.getElementById("note").value;
 
-  const snapshot = await getDocs(collection(db, "transactions"));
+  if (!amount) return alert("Nominal kosong");
 
-  snapshot.forEach(docSnap => {
-    const data = docSnap.data();
-    if (!data.date.startsWith(monthFilter.value)) return;
+  const date = new Date();
 
-    const tr = document.createElement("tr");
-
-    const valueClass = data.type === "out" ? "minus" : "plus";
-    const sign = data.type === "out" ? "-" : "+";
-
-    saldo += data.type === "out"
-      ? -Number(data.amount)
-      : Number(data.amount);
-
-    tr.innerHTML = `
-      <td>${data.date}</td>
-      <td>${data.note}</td>
-      <td class="${valueClass}">
-        ${sign} ${rupiah(data.amount)}
-      </td>
-      <td>
-        <button class="action-btn" data-id="${docSnap.id}">✕</button>
-      </td>
-    `;
-
-    tr.querySelector("button").onclick = async () => {
-      await deleteDoc(doc(db, "transactions", docSnap.id));
-      loadTransactions();
-    };
-
-    list.appendChild(tr);
+  db.collection("transactions").add({
+    type,
+    amount,
+    note,
+    createdAt: firebase.firestore.Timestamp.fromDate(date),
+    month: date.toISOString().slice(0,7)
   });
 
-  saldoEl.innerHTML = saldo >= 0
-    ? `<span class="positive">${rupiah(saldo)}</span>`
-    : `<span class="negative">${rupiah(saldo)}</span>`;
-}
+  document.getElementById("amount").value = "";
+  document.getElementById("note").value = "";
+};
 
-// ===== SUBMIT =====
-form.onsubmit = async e => {
-  e.preventDefault();
-
-  const data = {
-    date: form.date.value,
-    note: form.note.value,
-    amount: Number(form.amount.value),
-    type: form.type.value
-  };
-
-  await addDoc(collection(db, "transactions"), data);
-  form.reset();
+// ===== FILTER =====
+monthFilter.onchange = () => {
+  currentMonth = monthFilter.value;
   loadTransactions();
 };
 
-// ===== FILTER BULAN =====
-monthFilter.onchange = loadTransactions;
+// ===== LOAD DATA =====
+function loadTransactions() {
+  let ref = db.collection("transactions")
+    .orderBy("createdAt", "desc");
+
+  if (currentMonth) {
+    ref = ref.where("month", "==", currentMonth);
+  }
+
+  ref.onSnapshot(snapshot => {
+    historyEl.innerHTML = "";
+    let income = 0, expense = 0;
+
+    snapshot.forEach(doc => {
+      const d = doc.data();
+      const li = document.createElement("li");
+
+      const date = d.createdAt.toDate().toLocaleDateString("id-ID");
+      const isIncome = d.type === "income";
+      const amountClass = isIncome ? "positive" : "negative";
+
+      isIncome ? income += d.amount : expense += d.amount;
+
+      li.innerHTML = `
+        <div>
+          <div class="date">${date}</div>
+          <div>${d.note || "-"}</div>
+        </div>
+        <div class="amount ${amountClass}">
+          ${isIncome ? "+" : "-"}${rupiah(d.amount)}
+          <button class="delete">✕</button>
+        </div>
+      `;
+
+      li.querySelector(".delete").onclick = () => {
+        db.collection("transactions").doc(doc.id).delete();
+      };
+
+      historyEl.appendChild(li);
+    });
+
+    const saldo = income - expense;
+    saldoEl.textContent = rupiah(saldo);
+    saldoEl.className = saldo < 0 ? "negative" : "positive";
+
+    renderChart(income, expense);
+  });
+}
+
+loadTransactions();
+
+// ===== CHART =====
+function renderChart(income, expense) {
+  if (chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: ["Pemasukan", "Pengeluaran"],
+      datasets: [{ data: [income, expense] }]
+    }
+  });
+}
 
 // ===== MARKET =====
 async function loadMarket() {
   try {
     // USD → IDR
-    const usdRes = await fetch("https://api.frankfurter.app/latest?from=USD&to=IDR");
-    const usdData = await usdRes.json();
-    const usdRate = usdData.rates.IDR;
+    const usdRes = await fetch("https://open.er-api.com/v6/latest/USD");
+    const usd = await usdRes.json();
+    const usdRate = usd.rates.IDR;
 
     document.getElementById("usd").innerHTML =
       `USD → IDR: <span class="positive">${rupiah(usdRate)}</span>`;
 
-    // EMAS PER GRAM
-    const goldUSDoz = 2050;
-    const goldIDRgram = (goldUSDoz * usdRate) / 31.1035;
+    // Emas Dunia (XAU)
+    const xauRes = await fetch("https://open.er-api.com/v6/latest/XAU");
+    const xau = await xauRes.json();
+    const goldIDR = xau.rates.USD * usdRate;
 
     document.getElementById("gold").innerHTML =
-      `Emas / gram:
-       <span class="positive">${rupiah(goldIDRgram)}</span>`;
+      `Emas Dunia (1 oz): <span class="positive">${rupiah(goldIDR)}</span>`;
 
-    // BITCOIN
+    // Bitcoin
     const btcRes = await fetch(
       "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=idr&include_24hr_change=true"
     );
     const btc = await btcRes.json();
-
-    const btcPrice = btc.bitcoin.idr;
-    const btcChange = btc.bitcoin.idr_24h_change;
+    const chg = btc.bitcoin.idr_24h_change;
 
     document.getElementById("btc").innerHTML =
-      `Bitcoin:
-       ${rupiah(btcPrice)}
-       <span class="${btcChange >= 0 ? "positive" : "negative"}">
-         (${btcChange.toFixed(2)}%)
-       </span>`;
+      `Bitcoin: ${rupiah(btc.bitcoin.idr)}
+      <span class="${chg >= 0 ? "positive" : "negative"}">
+        (${chg.toFixed(2)}%)
+      </span>`;
 
-  } catch {
-    document.getElementById("btc").textContent = "Bitcoin: error";
-    document.getElementById("usd").textContent = "USD → IDR: error";
-    document.getElementById("gold").textContent = "Emas / gram: error";
+  } catch (e) {
+    console.error("Market error", e);
   }
 }
 
-// ===== INIT =====
-loadTransactions();
 loadMarket();
 setInterval(loadMarket, 300000);
