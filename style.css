@@ -1,120 +1,119 @@
+:root {
+  --bg: #0b0f0d;
+  --card: #121917;
+  --neon: #00ff88;
+  --red: #ff4d4d;
+  --text: #e6fef2;
+  --muted: #9bbfb1;
+}
+
 * {
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  font-family: "Segoe UI", sans-serif;
 }
 
 body {
   margin: 0;
-  background: #000;
-  color: #e0ffe9;
+  background: var(--bg);
+  color: var(--text);
 }
 
-header {
-  padding: 20px;
-  border-bottom: 1px solid #00ff99;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-h1, h2 {
-  color: #00ff99;
-}
-
-main {
-  padding: 20px;
-  display: grid;
-  gap: 20px;
-}
-
-.card {
-  background: #0a0a0a;
-  border: 1px solid #00ff99;
-  border-radius: 18px;
+header, footer {
+  background: #08110d;
   padding: 16px;
-  box-shadow: 0 0 18px rgba(0,255,153,.15);
-}
-
-input, select {
-  width: 100%;
-  margin-top: 8px;
-  padding: 10px;
-  background: #000;
-  border: 1px solid #00ff99;
-  border-radius: 14px;
-  color: #e0ffe9;
-}
-
-button {
-  margin-top: 12px;
-  width: 100%;
-  padding: 10px;
-  background: #00ff99;
-  border: none;
-  border-radius: 14px;
-  font-weight: bold;
-  color: #000;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #00cc77;
-}
-
-.market {
-  display: grid;
-  gap: 10px;
-}
-
-.market-item {
-  padding: 12px;
-  border-radius: 14px;
-  background: #050505;
-  border: 1px solid #033;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-li {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px dashed #033;
-}
-
-.date {
-  font-size: 0.75em;
-  color: #7fffd4;
-}
-
-.amount {
-  font-weight: bold;
-}
-
-.positive {
-  color: #00ff99;
-}
-
-.negative {
-  color: #ff4444;
-}
-
-.delete {
-  margin-left: 8px;
-  padding: 4px 8px;
-  border-radius: 8px;
-  background: #ff4444;
-  color: #000;
-  border: none;
-  cursor: pointer;
+  text-align: center;
+  border-bottom: 1px solid #0f2a1f;
 }
 
 footer {
-  text-align: center;
+  border-top: 1px solid #0f2a1f;
+  border-bottom: none;
+  color: var(--muted);
+}
+
+main {
   padding: 16px;
-  border-top: 1px solid #00ff99;
+  max-width: 900px;
+  margin: auto;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 0 18px rgba(0,255,136,0.05);
+}
+
+h2 {
+  margin-top: 0;
+  color: var(--neon);
+}
+
+.market div {
+  margin: 6px 0;
+  font-size: 15px;
+}
+
+.positive {
+  color: var(--neon);
+  font-weight: bold;
+}
+
+.negative {
+  color: var(--red);
+  font-weight: bold;
+}
+
+input, select, button {
+  background: #0f1613;
+  color: var(--text);
+  border: 1px solid #1f3d30;
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+button {
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: var(--neon);
+  color: #000;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+th {
+  color: var(--muted);
+  font-weight: normal;
+  text-align: left;
+  font-size: 13px;
+}
+
+td {
+  background: #0f1613;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+td.minus {
+  color: var(--red);
+}
+
+td.plus {
+  color: var(--neon);
+}
+
+.action-btn {
+  background: transparent;
+  border: none;
+  color: var(--red);
+  cursor: pointer;
 }
