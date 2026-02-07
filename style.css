@@ -6,19 +6,19 @@
 body {
   margin: 0;
   background: #000;
-  color: #0f0;
+  color: #e0ffe9;
 }
 
 header {
   padding: 20px;
-  border-bottom: 1px solid #0f0;
+  border-bottom: 1px solid #00ff99;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.saldo {
-  font-size: 1.2em;
+h1, h2 {
+  color: #00ff99;
 }
 
 main {
@@ -28,52 +28,37 @@ main {
 }
 
 .card {
-  background: #050505;
-  border: 1px solid #0f0;
-  padding: 15px;
-  border-radius: 8px;
+  background: #0a0a0a;
+  border: 1px solid #00ff99;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 0 18px rgba(0,255,153,.15);
 }
 
 input, select {
   width: 100%;
-  padding: 10px;
   margin-top: 8px;
+  padding: 10px;
   background: #000;
-  border: 1px solid #0f0;
-  color: #0f0;
+  border: 1px solid #00ff99;
+  border-radius: 14px;
+  color: #e0ffe9;
 }
 
 button {
-  margin-top: 10px;
+  margin-top: 12px;
   width: 100%;
   padding: 10px;
-  background: #0f0;
-  color: #000;
-  font-weight: bold;
+  background: #00ff99;
   border: none;
+  border-radius: 14px;
+  font-weight: bold;
+  color: #000;
   cursor: pointer;
 }
 
 button:hover {
-  background: #00cc00;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-li {
-  padding: 8px 0;
-  border-bottom: 1px solid #033;
-}
-
-.income {
-  color: #0f0;
-}
-
-.expense {
-  color: #f00;
+  background: #00cc77;
 }
 
 .market {
@@ -82,21 +67,54 @@ li {
 }
 
 .market-item {
-  padding: 10px;
-  border: 1px solid #0f0;
-  border-radius: 6px;
+  padding: 12px;
+  border-radius: 14px;
+  background: #050505;
+  border: 1px solid #033;
 }
 
-.up {
-  color: #0f0;
+ul {
+  list-style: none;
+  padding: 0;
 }
 
-.down {
-  color: #f00;
+li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px dashed #033;
+}
+
+.date {
+  font-size: 0.75em;
+  color: #7fffd4;
+}
+
+.amount {
+  font-weight: bold;
+}
+
+.positive {
+  color: #00ff99;
+}
+
+.negative {
+  color: #ff4444;
+}
+
+.delete {
+  margin-left: 8px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: #ff4444;
+  color: #000;
+  border: none;
+  cursor: pointer;
 }
 
 footer {
   text-align: center;
-  padding: 15px;
-  border-top: 1px solid #0f0;
+  padding: 16px;
+  border-top: 1px solid #00ff99;
 }
