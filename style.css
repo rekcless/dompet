@@ -1,0 +1,105 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  background: #050505;
+  color: #e5e5e5;
+}
+
+/* ===== HEADER ===== */
+header {
+  background: #000;
+  border-bottom: 2px solid #00ff9c;
+  padding: 16px;
+  text-align: center;
+}
+
+header h1 {
+  color: #00ff9c;
+  margin-bottom: 6px;
+}
+
+.saldo span {
+  color: #00ff9c;
+  font-weight: bold;
+}
+
+/* ===== MAIN ===== */
+main {
+  padding: 20px;
+}
+
+/* ===== CHART ===== */
+.chart-box {
+  background: #0b0b0b;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid #00ff9c44;
+  margin-bottom: 25px;
+}
+
+/* ===== MARKET INFO ===== */
+.market-info h2 {
+  color: #00ff9c;
+  margin-bottom: 12px;
+}
+
+.market-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.card {
+  background: #0f0f0f;
+  border: 1px solid #00ff9c33;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.card p {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.card span {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* WARNA STATUS */
+.up {
+  color: #00ff9c;
+}
+
+.down {
+  color: #ff4d4d;
+}
+
+.neutral {
+  color: #ccc;
+}
+
+.card small {
+  font-size: 12px;
+}
+
+/* UPDATE TIME */
+.update-time {
+  margin-top: 10px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  text-align: center;
+  padding: 14px;
+  border-top: 1px solid #00ff9c33;
+  font-size: 13px;
+  margin-top: 30px;
+}
