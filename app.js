@@ -17,7 +17,7 @@ const now = new Date();
 currentMonth = now.toISOString().slice(0,7);
 monthFilter.value = currentMonth;
 
-// ===== SIMPAN =====
+// ===== SIMPAN TRANSAKSI =====
 saveBtn.onclick = () => {
   const type = document.getElementById("type").value;
   const amount = Number(document.getElementById("amount").value);
@@ -39,27 +39,34 @@ saveBtn.onclick = () => {
   document.getElementById("note").value = "";
 };
 
-// ===== FILTER =====
+// ===== FILTER BULAN =====
 monthFilter.onchange = () => {
   currentMonth = monthFilter.value;
-  loadTransactions();
+  renderUI(allData);
 };
 
-// ===== LOAD DATA =====
-function loadTransactions() {
-  let ref = db.collection("transactions")
-    .orderBy("createdAt", "desc");
+let allData = [];
 
-  if (currentMonth) {
-    ref = ref.where("month", "==", currentMonth);
-  }
+// ===== SATU-SATUNYA LISTENER =====
+db.collection("transactions")
+  .orderBy("createdAt", "desc")
+  .onSnapshot(snapshot => {
+    allData = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    renderUI(allData);
+  });
 
-  ref.onSnapshot(snapshot => {
-    historyEl.innerHTML = "";
-    let income = 0, expense = 0;
+// ===== RENDER UI =====
+function renderUI(data) {
+  historyEl.innerHTML = "";
+  let income = 0;
+  let expense = 0;
 
-    snapshot.forEach(doc => {
-      const d = doc.data();
+  data
+    .filter(d => d.month === currentMonth)
+    .forEach(d => {
       const li = document.createElement("li");
 
       const date = d.createdAt.toDate().toLocaleDateString("id-ID");
@@ -80,25 +87,23 @@ function loadTransactions() {
       `;
 
       li.querySelector(".delete").onclick = () => {
-        db.collection("transactions").doc(doc.id).delete();
+        db.collection("transactions").doc(d.id).delete();
       };
 
       historyEl.appendChild(li);
     });
 
-    const saldo = income - expense;
-    saldoEl.textContent = rupiah(saldo);
-    saldoEl.className = saldo < 0 ? "negative" : "positive";
+  const saldo = income - expense;
+  saldoEl.textContent = rupiah(saldo);
+  saldoEl.className = saldo < 0 ? "negative" : "positive";
 
-    renderChart(income, expense);
-  });
+  renderChart(income, expense);
 }
-
-loadTransactions();
 
 // ===== CHART =====
 function renderChart(income, expense) {
   if (chart) chart.destroy();
+
   chart = new Chart(ctx, {
     type: "doughnut",
     data: {
@@ -107,43 +112,3 @@ function renderChart(income, expense) {
     }
   });
 }
-
-// ===== MARKET =====
-async function loadMarket() {
-  try {
-    // USD → IDR
-    const usdRes = await fetch("https://open.er-api.com/v6/latest/USD");
-    const usd = await usdRes.json();
-    const usdRate = usd.rates.IDR;
-
-    document.getElementById("usd").innerHTML =
-      `USD → IDR: <span class="positive">${rupiah(usdRate)}</span>`;
-
-    // Emas Dunia (XAU)
-    const xauRes = await fetch("https://open.er-api.com/v6/latest/XAU");
-    const xau = await xauRes.json();
-    const goldIDR = xau.rates.USD * usdRate;
-
-    document.getElementById("gold").innerHTML =
-      `Emas Dunia (1 oz): <span class="positive">${rupiah(goldIDR)}</span>`;
-
-    // Bitcoin
-    const btcRes = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=idr&include_24hr_change=true"
-    );
-    const btc = await btcRes.json();
-    const chg = btc.bitcoin.idr_24h_change;
-
-    document.getElementById("btc").innerHTML =
-      `Bitcoin: ${rupiah(btc.bitcoin.idr)}
-      <span class="${chg >= 0 ? "positive" : "negative"}">
-        (${chg.toFixed(2)}%)
-      </span>`;
-
-  } catch (e) {
-    console.error("Market error", e);
-  }
-}
-
-loadMarket();
-setInterval(loadMarket, 300000);
