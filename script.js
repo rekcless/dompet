@@ -1,12 +1,10 @@
-/***********************
- * MARKET DATA SCRIPT *
- ***********************/
+/************************
+ * MARKET DATA - FINAL *
+ ************************/
 
-// simpan harga sebelumnya
 let prevBTC = null;
 let prevGold = null;
 
-// fungsi hitung naik / turun
 function setChange(priceEl, changeEl, current, previous) {
   if (previous === null) {
     priceEl.className = "neutral";
@@ -32,40 +30,33 @@ function setChange(priceEl, changeEl, current, previous) {
 async function loadMarket() {
   try {
     /* =====================
-       BITCOIN (CoinGecko)
+       COINGECKO (BTC + GOLD)
     ====================== */
-    const btcRes = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=idr"
+    const marketRes = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,gold&vs_currencies=idr,usd"
     );
-    const btcData = await btcRes.json();
-    const btcPrice = btcData.bitcoin.idr;
+    const market = await marketRes.json();
 
+    // ===== BITCOIN =====
+    const btcPrice = market.bitcoin.idr;
     const btcEl = document.getElementById("btc");
-    const btcChangeEl = document.getElementById("btcChange");
+    const btcChange = document.getElementById("btcChange");
 
     btcEl.innerText = "Rp " + btcPrice.toLocaleString("id-ID");
-    setChange(btcEl, btcChangeEl, btcPrice, prevBTC);
+    setChange(btcEl, btcChange, btcPrice, prevBTC);
     prevBTC = btcPrice;
 
-    /* =====================
-       EMAS DUNIA (XAU/USD)
-       via Frankfurter ECB
-    ====================== */
-    const goldRes = await fetch(
-      "https://api.frankfurter.app/latest?from=XAU&to=USD"
-    );
-    const goldData = await goldRes.json();
-    const goldPrice = goldData.rates.USD;
-
+    // ===== GOLD WORLD =====
+    const goldPrice = market.gold.usd;
     const goldEl = document.getElementById("gold");
-    const goldChangeEl = document.getElementById("goldChange");
+    const goldChange = document.getElementById("goldChange");
 
     goldEl.innerText = "$ " + goldPrice.toLocaleString("en-US") + " / oz";
-    setChange(goldEl, goldChangeEl, goldPrice, prevGold);
+    setChange(goldEl, goldChange, goldPrice, prevGold);
     prevGold = goldPrice;
 
     /* =====================
-       USD → IDR (ECB)
+       USD → IDR
     ====================== */
     const usdRes = await fetch(
       "https://api.frankfurter.app/latest?from=USD&to=IDR"
@@ -82,46 +73,12 @@ async function loadMarket() {
       "Update terakhir: " + new Date().toLocaleString("id-ID");
 
   } catch (err) {
-    console.error("Gagal load market data:", err);
+    console.error("Market error:", err);
   }
-}
-
-/* =====================
-   CHART (Dummy / Placeholder)
-====================== */
-const ctx = document.getElementById("financeChart");
-if (ctx) {
-  new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: ["Jan", "Feb", "Mar", "Apr"],
-      datasets: [
-        {
-          label: "Saldo",
-          data: [0, 0, 0, 0],
-          borderWidth: 2,
-          tension: 0.4
-        }
-      ]
-    },
-    options: {
-      plugins: {
-        legend: {
-          labels: {
-            color: "#00ff9c"
-          }
-        }
-      },
-      scales: {
-        x: { ticks: { color: "#aaa" } },
-        y: { ticks: { color: "#aaa" } }
-      }
-    }
-  });
 }
 
 /* =====================
    INIT
 ====================== */
 loadMarket();
-setInterval(loadMarket, 60000); // update tiap 1 menit
+setInterval(loadMarket, 60000);
