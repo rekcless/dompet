@@ -1,9 +1,15 @@
+/***********************
+ * MARKET DATA SCRIPT *
+ ***********************/
+
+// simpan harga sebelumnya
 let prevBTC = null;
 let prevGold = null;
 
-function setChange(el, changeEl, current, previous) {
+// fungsi hitung naik / turun
+function setChange(priceEl, changeEl, current, previous) {
   if (previous === null) {
-    el.className = "neutral";
+    priceEl.className = "neutral";
     changeEl.innerText = "";
     return;
   }
@@ -12,20 +18,22 @@ function setChange(el, changeEl, current, previous) {
   const percent = (diff / previous) * 100;
 
   if (diff > 0) {
-    el.className = "up";
+    priceEl.className = "up";
     changeEl.innerText = `▲ ${percent.toFixed(2)}%`;
   } else if (diff < 0) {
-    el.className = "down";
+    priceEl.className = "down";
     changeEl.innerText = `▼ ${percent.toFixed(2)}%`;
   } else {
-    el.className = "neutral";
+    priceEl.className = "neutral";
     changeEl.innerText = "0%";
   }
 }
 
 async function loadMarket() {
   try {
-    // BITCOIN
+    /* =====================
+       BITCOIN (CoinGecko)
+    ====================== */
     const btcRes = await fetch(
       "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=idr"
     );
@@ -33,53 +41,87 @@ async function loadMarket() {
     const btcPrice = btcData.bitcoin.idr;
 
     const btcEl = document.getElementById("btc");
-    const btcChange = document.getElementById("btcChange");
+    const btcChangeEl = document.getElementById("btcChange");
 
     btcEl.innerText = "Rp " + btcPrice.toLocaleString("id-ID");
-    setChange(btcEl, btcChange, btcPrice, prevBTC);
+    setChange(btcEl, btcChangeEl, btcPrice, prevBTC);
     prevBTC = btcPrice;
 
-    // GOLD
-    const goldRes = await fetch("https://api.metals.live/v1/spot/gold");
+    /* =====================
+       EMAS DUNIA (XAU/USD)
+       via Frankfurter ECB
+    ====================== */
+    const goldRes = await fetch(
+      "https://api.frankfurter.app/latest?from=XAU&to=USD"
+    );
     const goldData = await goldRes.json();
-    const goldPrice = goldData[0][1];
+    const goldPrice = goldData.rates.USD;
 
     const goldEl = document.getElementById("gold");
-    const goldChange = document.getElementById("goldChange");
+    const goldChangeEl = document.getElementById("goldChange");
 
     goldEl.innerText = "$ " + goldPrice.toLocaleString("en-US") + " / oz";
-    setChange(goldEl, goldChange, goldPrice, prevGold);
+    setChange(goldEl, goldChangeEl, goldPrice, prevGold);
     prevGold = goldPrice;
 
-    // USD IDR
-    const usdRes = await fetch("https://api.exchangerate-api.com/v4/latest/USD");
+    /* =====================
+       USD → IDR (ECB)
+    ====================== */
+    const usdRes = await fetch(
+      "https://api.frankfurter.app/latest?from=USD&to=IDR"
+    );
     const usdData = await usdRes.json();
 
     document.getElementById("usd").innerText =
       "Rp " + usdData.rates.IDR.toLocaleString("id-ID");
 
+    /* =====================
+       UPDATE TIME
+    ====================== */
     document.getElementById("updateTime").innerText =
       "Update terakhir: " + new Date().toLocaleString("id-ID");
 
   } catch (err) {
-    console.error("Market error:", err);
+    console.error("Gagal load market data:", err);
   }
 }
 
-// CHART (dummy, bisa disambung ke data lu)
+/* =====================
+   CHART (Dummy / Placeholder)
+====================== */
 const ctx = document.getElementById("financeChart");
-new Chart(ctx, {
-  type: "line",
-  data: {
-    labels: ["Jan", "Feb", "Mar", "Apr"],
-    datasets: [{
-      label: "Saldo",
-      data: [0, 0, 0, 0],
-      borderWidth: 2,
-      tension: 0.4
-    }]
-  }
-});
+if (ctx) {
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: ["Jan", "Feb", "Mar", "Apr"],
+      datasets: [
+        {
+          label: "Saldo",
+          data: [0, 0, 0, 0],
+          borderWidth: 2,
+          tension: 0.4
+        }
+      ]
+    },
+    options: {
+      plugins: {
+        legend: {
+          labels: {
+            color: "#00ff9c"
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: "#aaa" } },
+        y: { ticks: { color: "#aaa" } }
+      }
+    }
+  });
+}
 
+/* =====================
+   INIT
+====================== */
 loadMarket();
-setInterval(loadMarket, 60000);
+setInterval(loadMarket, 60000); // update tiap 1 menit
