@@ -1,105 +1,102 @@
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
-  font-family: "Segoe UI", sans-serif;
+  font-family: Arial, sans-serif;
 }
 
 body {
-  background: #050505;
-  color: #e5e5e5;
-}
-
-/* ===== HEADER ===== */
-header {
+  margin: 0;
   background: #000;
-  border-bottom: 2px solid #00ff9c;
-  padding: 16px;
-  text-align: center;
+  color: #0f0;
 }
 
-header h1 {
-  color: #00ff9c;
-  margin-bottom: 6px;
+header {
+  padding: 20px;
+  border-bottom: 1px solid #0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.saldo span {
-  color: #00ff9c;
-  font-weight: bold;
+.saldo {
+  font-size: 1.2em;
 }
 
-/* ===== MAIN ===== */
 main {
   padding: 20px;
-}
-
-/* ===== CHART ===== */
-.chart-box {
-  background: #0b0b0b;
-  padding: 15px;
-  border-radius: 12px;
-  border: 1px solid #00ff9c44;
-  margin-bottom: 25px;
-}
-
-/* ===== MARKET INFO ===== */
-.market-info h2 {
-  color: #00ff9c;
-  margin-bottom: 12px;
-}
-
-.market-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 15px;
+  gap: 20px;
 }
 
 .card {
-  background: #0f0f0f;
-  border: 1px solid #00ff9c33;
-  border-radius: 12px;
-  padding: 12px;
+  background: #050505;
+  border: 1px solid #0f0;
+  padding: 15px;
+  border-radius: 8px;
 }
 
-.card p {
-  font-size: 14px;
-  margin-bottom: 6px;
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  background: #000;
+  border: 1px solid #0f0;
+  color: #0f0;
 }
 
-.card span {
-  font-size: 16px;
+button {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  background: #0f0;
+  color: #000;
   font-weight: bold;
+  border: none;
+  cursor: pointer;
 }
 
-/* WARNA STATUS */
+button:hover {
+  background: #00cc00;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  padding: 8px 0;
+  border-bottom: 1px solid #033;
+}
+
+.income {
+  color: #0f0;
+}
+
+.expense {
+  color: #f00;
+}
+
+.market {
+  display: grid;
+  gap: 10px;
+}
+
+.market-item {
+  padding: 10px;
+  border: 1px solid #0f0;
+  border-radius: 6px;
+}
+
 .up {
-  color: #00ff9c;
+  color: #0f0;
 }
 
 .down {
-  color: #ff4d4d;
+  color: #f00;
 }
 
-.neutral {
-  color: #ccc;
-}
-
-.card small {
-  font-size: 12px;
-}
-
-/* UPDATE TIME */
-.update-time {
-  margin-top: 10px;
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-/* ===== FOOTER ===== */
 footer {
   text-align: center;
-  padding: 14px;
-  border-top: 1px solid #00ff9c33;
-  font-size: 13px;
-  margin-top: 30px;
+  padding: 15px;
+  border-top: 1px solid #0f0;
 }
